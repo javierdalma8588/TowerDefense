@@ -1,0 +1,52 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Bullet : MonoBehaviour
+{
+    private Transform target;
+
+    public float speed = 30;
+
+    public int amountDamage = 20;
+
+    public void Seek (Transform _target)
+    {
+        target = _target;
+    }
+
+    void Update()
+    {
+        if(target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        //
+        Vector3 dir = target.position - transform.position;
+        float distanceFrame = speed * Time.deltaTime;
+
+        //we check the current distance to the target and if that is less we already hit the object
+        if(dir.magnitude <= distanceFrame)
+        {
+            Hit();
+            return;
+        }
+
+        transform.Translate(dir.normalized * distanceFrame, Space.World);
+    }
+
+    void Hit()
+    {
+        Damage(target);
+        Destroy(gameObject);
+    }
+
+    void Damage(Transform enemy)
+    {
+        BaseEnemy en = enemy.GetComponent<BaseEnemy>();
+        en.TakeDamage(amountDamage);
+        Destroy(enemy.gameObject);
+    }
+}
